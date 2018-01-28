@@ -1,5 +1,5 @@
 const MongoClient = require('mongodb').MongoClient;
-const ObjectID = require('Mongodb').ObjectID;
+const ObjectId = require('Mongodb').ObjectID;
 
 MongoClient.connect('mongodb://localhost:27017/TodoApp', (err,database) =>{
 	if(err){
@@ -19,12 +19,37 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp', (err,database) =>{
 	// 	console.log(JSON.stringify(result.ops,undefined,2))
 	// });
 
-	db.collection('Todos').find().toArray().then((docs)=>{
-		console.log('Todos');
-		console.log(JSON.stringify(docs,undefined,2));
-	}).catch((err)=>{
-		console.log(err);
-	});
+	// db.collection('Todos').find().toArray().then((docs)=>{
+	// 	console.log('Todos');
+	// 	console.log(JSON.stringify(docs,undefined,2));
+	// }).catch((err)=>{
+	// 	console.log(err);
+	// });
+
+	// // deleteOne
+	// db.collection('Todos').findOneAndDelete({_id: ObjectId("5a6e168e3ed47fc3d2725cb8")}).then((res)=>{
+	// 	console.log(res);
+	// });
+
+	// deletemany
+	// findOneAndDelete
+
+	db.collection('Todos').findOneAndUpdate(
+		{"_id" : ObjectId("5a6e19aa3ed47fc3d2725d31")
+	},{
+		$set: {
+			done: false
+		},
+		$inc: {
+			priority: 1
+		}
+	},{
+		returnOriginal: false
+	}
+	).then((result)=>{
+		console.log(result);
+	}
+	)
 
 	database.close();
 })
