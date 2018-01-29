@@ -5,7 +5,7 @@ mongoose.connect('mongodb://localhost:27017/TodoApp',{
 	// remove warning
 	useMongoClient: true
 })
-.then(()=> console.log('MongoDb connect'))
+.then(()=>{} )
 .catch(err => console.log(err));
 
 module.exports.mongoose = mongoose;
