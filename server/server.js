@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
 
@@ -42,7 +43,7 @@ app.get('/todos', (req,res) =>{
 app.get('/todos/:id',(req, res)=>{
 	var id = req.params.id;
 	if(!ObjectId.isValid(id)){
-		return res.status(404).send({});
+		return res.status(404).send();
 	}
 
 	Todo.findById(id).then((docs) =>{
@@ -58,8 +59,8 @@ app.get('/todos/:id',(req, res)=>{
 
 app.delete('/todos/:id',(req, res)=>{
 	var id = req.params.id;
-		if(!ObjectId.isValid(id)){
-		return res.status(404).send({});
+	if(!ObjectId.isValid(id)){
+		return res.status(404).send();
 	}
 
 	Todo.findByIdAndRemove(id).then((docs)=>{
@@ -70,6 +71,34 @@ app.delete('/todos/:id',(req, res)=>{
 	}).catch((err)=>{
 		return res.status(400).send({});
 	});
+});
+
+app.patch('/todos/:id',(req,res) =>{
+	var id = req.params.id;
+	var body = _.pick(req.body, ['text', 'completed']);
+
+	if(!ObjectId.isValid(id)){
+		return res.status(404).send();
+	}
+
+	if(_.isBoolean(body.completed) && body.completed){
+		body.completedAt = new Date().getTime();
+	}else{
+		body.completed = false;
+		body.completedAt = null;
+	}
+	console.log(body);
+
+	Todo.findByIdAndUpdate(id,{$set: body}, {new :true}).then((docs)=>{
+		if(!docs){
+			return res.status(404).send();
+		}
+		res.send({docs});
+	})
+	.catch((err)=>{
+		return res.status(400).send();
+	});
+
 });
 
 
