@@ -14,7 +14,9 @@ dummy = [{
 	text: "dummy1"
 },{
 	_id: new ObjectId(),
-	text: "dummy2"
+	text: "dummy2",
+	completed: true,
+	completedAt: 1111111,
 }]
 
 
@@ -142,7 +144,7 @@ describe('DELETE /todos:id', ()=>{
 	});
 
 	it('should return 404 for invalid ids',(done)=>{
-				request(app)
+		request(app)
 			.delete(`/todos/${dummy[0]._id.toHexString()}9`)
 			.expect(404)
 			.expect((res)=>{
@@ -151,4 +153,43 @@ describe('DELETE /todos:id', ()=>{
 			.end(done);
 	});
 });
+
+describe('PATCH /todos/:id',()=>{
+	it('should update the todos',(done)=>{
+		var hexId = dummy[0]._id.toHexString();
+		var text = "some";
+		request(app)
+			.patch(`/todos/${hexId}`)
+			.send({
+				text,
+				"completed": true
+			})
+			.expect(200)
+			.expect((res)=>{
+				expect(res.body.docs.completed).toBe(true);
+				expect(res.body.docs.text).toBe(text);
+
+				//expect(res.body.docs.completedAt).toMatchObject("number"); - upgrade problem
+			})
+			.end(done);
+	});
+	it('should clear completedAt when todo is not completed', (done)=>{
+		var hexId = dummy[1]._id.toHexString();
+
+		request(app)
+			.patch(`/todos/${hexId}`)
+			.send({"completed": false})
+			.expect(200)
+			.expect((res)=>{
+				expect(res.body.docs.completed).toBe(false);
+				expect(res.body.docs.completedAt).toBeNull();
+			})
+			.end(done);
+	});
+});
+
+
+
+
+
 
