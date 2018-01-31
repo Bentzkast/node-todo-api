@@ -103,6 +103,19 @@ app.patch('/todos/:id',(req,res) =>{
 
 });
 
+app.post('/users', (req, res)=>{
+	var body = _.pick(req.body, ['email','password']);
+	var user = new User(body);
+
+	// Save with to model 
+	user.save().then((user)=> {
+		res.send(user);
+	})
+	.catch((err)=>{
+		res.status(400).send(err);
+	});
+});
+
 
 app.listen(port, ()=> console.log(`Server started on port ${port}!`));
 module.exports = {app};
